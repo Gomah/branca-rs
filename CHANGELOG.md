@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file. The project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## 0.2.0
+
+### Minor Changes
+
+- e8883e7: Drop Node.js 20 support. It reached end of life on 2026-04-30 and the build toolchain no longer runs on it. The minimum is now Node.js 22.12, the first 22.x release where `require()` of ES modules works without a flag.
+
 ## 0.1.0
 
 ### Minor Changes

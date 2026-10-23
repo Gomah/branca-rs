@@ -1,6 +1,6 @@
 {
   "name": "branca-rs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Branca tokens (IETF XChaCha20-Poly1305, base62) for JavaScript and TypeScript, powered by a Rust core compiled to WebAssembly",
   "keywords": [
     "aead",
