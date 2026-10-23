@@ -75,20 +75,20 @@
     "prepublishOnly": "bun run build && bun run check:package && bun run skills:check"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.5",
-    "@changesets/cli": "^3.0.3",
-    "@tanstack/intent": "^0.5.6",
-    "@types/bun": "^1.4.4",
-    "binaryen": "^132.0.0",
-    "branca": "^0.5.0",
-    "libsodium-wrappers": "^0.8.4",
-    "mitata": "^1.0.34",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
-    "publint": "^0.3.25",
-    "tsdown": "^0.23.1",
-    "typescript": "^7.0.2",
-    "unrun": "^0.3.1"
+    "@arethetypeswrong/cli": "0.18.5",
+    "@changesets/cli": "3.0.3",
+    "@tanstack/intent": "0.5.6",
+    "@types/bun": "1.4.4",
+    "binaryen": "132.0.0",
+    "branca": "0.5.0",
+    "libsodium-wrappers": "0.8.4",
+    "mitata": "1.0.34",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "publint": "0.3.25",
+    "tsdown": "0.23.2",
+    "typescript": "7.0.2",
+    "unrun": "0.3.1"
   },
   "engines": {
     "node": ">=22.12"
