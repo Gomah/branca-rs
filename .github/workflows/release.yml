@@ -15,7 +15,7 @@ jobs:
       pull-requests: write # open the "Version Packages" PR
       id-token: write # npm trusted publishing (OIDC) and provenance
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -27,7 +27,7 @@ jobs:
           cargo binstall --no-confirm --force "wasm-bindgen-cli@${VERSION}"
       - uses: oven-sh/setup-bun@v2
       # Trusted publishing needs npm 11.5.1 or newer, which Node 24 ships.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
