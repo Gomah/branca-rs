@@ -1,5 +1,5 @@
-// Exercises the built package from CommonJS. `require()` of the ESM build works on Node.js 20.19+
-// and 22.12+ because the package has no top-level await. Also runs under Bun.
+// Exercises the built package from CommonJS. `require()` of the ESM build works on Node.js 22.12+
+// because the package has no top-level await. Also runs under Bun.
 const { Branca, BrancaError, decode, encode, generateKey } = require("../dist/index.js");
 
 const key = generateKey();

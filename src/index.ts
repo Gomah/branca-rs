@@ -3,7 +3,7 @@
  * WebAssembly.
  *
  * Importing this module instantiates the embedded WebAssembly core synchronously, so there is no
- * top-level await and `require("branca-rs")` works on Node.js 20.19+ and 22.12+. Runtimes that
+ * top-level await and `require("branca-rs")` works on Node.js 22.12+. Runtimes that
  * forbid compiling WebAssembly from bytes (Cloudflare Workers, Vercel Edge) should import
  * "branca-rs/init" instead and pass their imported module to `init()`.
  */

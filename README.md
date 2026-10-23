@@ -1,7 +1,7 @@
 # branca-rs
 
 [![npm version](https://img.shields.io/npm/v/branca-rs.svg)](https://www.npmjs.com/package/branca-rs)
-[![Node.js 20.19+](https://img.shields.io/badge/node-%3E%3D20.19-brightgreen.svg)](#runtime-support)
+[![Node.js 22.12+](https://img.shields.io/badge/node-%3E%3D22.12-brightgreen.svg)](#runtime-support)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 [Branca](https://github.com/tuupola/branca-spec) tokens for JavaScript and TypeScript, powered by a Rust core
@@ -18,7 +18,7 @@ is close to its `local` tokens.
   [RustCrypto](https://github.com/RustCrypto/AEADs)) are Rust, compiled to a 35 KB WebAssembly module that
   is embedded in the package. A thin TypeScript layer provides the API, draws nonces from
   `crypto.getRandomValues`, and maps errors.
-- **Made for servers and serverless.** Node.js 20.19+, Bun, AWS Lambda, Cloudflare Workers and Vercel
+- **Made for servers and serverless.** Node.js 22.12+, Bun, AWS Lambda, Cloudflare Workers and Vercel
   Edge. No native binaries, no postinstall step, no network access, and no top-level `await`, so both
   `import` and `require()` work.
 - **Spec compliant and interoperable.** Passes all 25 official test vectors and round-trips tokens with
@@ -95,7 +95,7 @@ const claims = msgpack.decode(payload);
 
 | Runtime                                    | Status                         | Notes                                                                                          |
 | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Node.js 20.19+                             | Supported, in CI (20/22/24)    | `import` and `require()` both work. Older 20.x needs `await import("branca-rs")`.              |
+| Node.js 22.12+                             | Supported, in CI (22/24)       | `import` and `require()` both work.                                                            |
 | Bun                                        | Supported, in CI               | Tested with Bun 1.3.                                                                           |
 | AWS Lambda, Google Cloud Functions, Vercel | Supported                      | The module is embedded as base64, so bundlers produce a single self-contained file.            |
 | Cloudflare Workers, Vercel Edge            | Supported via `branca-rs/init` | These runtimes forbid compiling WebAssembly from bytes; see [Initialization](#initialization). |
@@ -177,8 +177,7 @@ await init(wasm);
 embedded module when called without arguments. `initSync(input?)` is the synchronous equivalent for
 Node.js, Bun and workers. Both are idempotent: the first call wins and later calls return at once.
 
-From CommonJS, `require("branca-rs")` works on Node.js 20.19+ and 22.12+. Older versions need
-`await import("branca-rs")`.
+From CommonJS, `require("branca-rs")` works on every supported Node.js version (22.12+).
 
 ## Security guidance
 
@@ -305,7 +304,7 @@ records the runtime versions. Bun and Node.js differ because their JavaScript an
 - `bun test` runs the same 25 vectors through the WebAssembly build, the API, TTL and validation tests, seven
   initialization scenarios in fresh processes, and round trips with branca-js.
 - CI runs rustfmt, clippy (native and `wasm32-unknown-unknown`), both test suites, smoke tests of the built
-  package under Node.js 20, 22 and 24 (ESM and CommonJS) and Bun, plus `publint` and
+  package under Node.js 22 and 24 (ESM and CommonJS) and Bun, plus `publint` and
   "Are the types wrong?".
 
 ## How it is built
