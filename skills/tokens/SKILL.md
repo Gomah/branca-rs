@@ -12,7 +12,7 @@ metadata:
     expiry and error handling.
   type: core
   library: branca-rs
-  library_version: "0.3.0"
+  library_version: "0.3.1"
 sources:
   - Gomah/branca-rs:README.md
   - Gomah/branca-rs:src/index.ts

@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. The project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## 0.3.1
+
+### Patch Changes
+
+- 03d90d8: The package now ships Agent Skills for coding agents in `skills/`: issuing and verifying tokens, running on edge runtimes, and migrating from branca-js. They are versioned with the package. Load them with TanStack Intent; see "Agent skills" in the README.
+- f26d826: Node.js 26, the LTS line from 2026-10-28, is now a supported runtime: CI tests the package on it alongside Node.js 22 and 24. The minimum stays Node.js 22.12.
+
 ## 0.3.0
 
 ### Minor Changes

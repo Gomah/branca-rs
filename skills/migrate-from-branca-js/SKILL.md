@@ -11,7 +11,7 @@ metadata:
     or weakening expiry checks.
   type: lifecycle
   library: branca-rs
-  library_version: "0.3.0"
+  library_version: "0.3.1"
 sources:
   - Gomah/branca-rs:README.md
   - Gomah/branca-rs:src/internal/branca.ts
