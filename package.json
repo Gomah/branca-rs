@@ -56,10 +56,13 @@
     "bench": "bun bench/branca.bench.ts",
     "bench:node": "node bench/branca.bench.ts",
     "bench:report": "bun bench/report.ts",
+    "changeset": "changeset",
+    "release": "changeset publish",
     "prepublishOnly": "bun run build && bun run check:package"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.3",
     "@types/bun": "^1.4.4",
     "binaryen": "^132.0.0",
     "branca": "^0.5.0",

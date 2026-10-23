@@ -1,20 +1,11 @@
 # Changelog
 
-All notable changes to this project are documented in this file. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
+All notable changes to this project are documented in this file. The project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## 0.1.0
 
-### Removed
-
-- Node.js 20 support. It reached end of life on 2026-04-30 and the build toolchain no longer runs on
-  it. The minimum is now Node.js 22.12, the first 22.x release where `require()` of ES modules works
-  without a flag.
-
-## [0.1.0] - 2026-10-22
-
-### Added
+### Minor Changes
 
 - Initial release: `encode`, `decode`, `generateKey`, the `Branca` class and `BrancaError` with stable
   error codes.
