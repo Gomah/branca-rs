@@ -104,18 +104,16 @@ pub struct Decoded {
 /// Unix epoch and is authenticated but not encrypted.
 pub fn encode(key: &[u8], nonce: &[u8], timestamp: u32, payload: &[u8]) -> Result<String, Error> {
     let cipher = XChaCha20Poly1305::new_from_slice(key).map_err(|_| Error::InvalidKeyLength)?;
-    if nonce.len() != NONCE_LEN {
-        return Err(Error::InvalidNonceLength);
-    }
+    let nonce = XNonce::try_from(nonce).map_err(|_| Error::InvalidNonceLength)?;
 
     let mut header = [0u8; HEADER_LEN];
     header[0] = TOKEN_VERSION;
     header[1..5].copy_from_slice(&timestamp.to_be_bytes());
-    header[5..].copy_from_slice(nonce);
+    header[5..].copy_from_slice(&nonce);
 
     let ciphertext = cipher
         .encrypt(
-            XNonce::from_slice(nonce),
+            &nonce,
             Payload {
                 msg: payload,
                 aad: &header,
@@ -146,9 +144,10 @@ pub fn decode(key: &[u8], token: &str, ttl: u32, now: u32) -> Result<Decoded, Er
 
     let (header, body) = raw.split_at(HEADER_LEN);
     let timestamp = u32::from_be_bytes([header[1], header[2], header[3], header[4]]);
+    let nonce = XNonce::try_from(&header[5..]).map_err(|_| Error::InvalidTokenLength)?;
     let payload = cipher
         .decrypt(
-            XNonce::from_slice(&header[5..]),
+            &nonce,
             Payload {
                 msg: body,
                 aad: header,
