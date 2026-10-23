@@ -95,7 +95,7 @@ const claims = msgpack.decode(payload);
 
 | Runtime                                    | Status                         | Notes                                                                                          |
 | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Node.js 22.12+                             | Supported, in CI (22/24)       | `import` and `require()` both work.                                                            |
+| Node.js 22.12+                             | Supported, in CI (22/24/26)    | `import` and `require()` both work.                                                            |
 | Bun                                        | Supported, in CI               | Tested with Bun 1.3.                                                                           |
 | AWS Lambda, Google Cloud Functions, Vercel | Supported                      | The module is embedded as base64, so bundlers produce a single self-contained file.            |
 | Cloudflare Workers, Vercel Edge            | Supported via `branca-rs/init` | These runtimes forbid compiling WebAssembly from bytes; see [Initialization](#initialization). |
@@ -372,8 +372,8 @@ records the runtime versions. Bun and Node.js differ because their JavaScript an
   check of what each entry point exports, seven initialization scenarios in fresh processes, and round trips
   with branca-js.
 - CI runs rustfmt, clippy (native and `wasm32-unknown-unknown`), both test suites, smoke tests of the built
-  package under Node.js 22 and 24 (ESM and CommonJS) and Bun, `publint` and "Are the types wrong?", plus
-  the agent skills check described under [Development](#development).
+  package under Node.js 22, 24 and 26 (ESM and CommonJS) and Bun, `publint` and "Are the types wrong?",
+  plus the agent skills check described under [Development](#development).
 
 ## How it is built
 

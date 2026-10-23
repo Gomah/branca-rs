@@ -2,7 +2,7 @@
   "skills": {
     "edge-runtimes": {
       "sources_sha": {
-        "Gomah/branca-rs:README.md": "e7b5c2c4aa8834f96bd44c1ab1d646f5e6f1a19e",
+        "Gomah/branca-rs:README.md": "736f6f7fcad4a15cea66036d0e88f307ccdd3f59",
         "Gomah/branca-rs:src/index.ts": "78f24988509bd42a23ad5121993c628c7fafdc2d",
         "Gomah/branca-rs:src/init.ts": "e5543926c8930f576510eff64f1ebb1a0d3c5402",
         "Gomah/branca-rs:src/internal/wasm.ts": "90f998f7fe6a757217b6be7a37a3ba1017e19de0"
@@ -10,14 +10,14 @@
     },
     "migrate-from-branca-js": {
       "sources_sha": {
-        "Gomah/branca-rs:README.md": "e7b5c2c4aa8834f96bd44c1ab1d646f5e6f1a19e",
+        "Gomah/branca-rs:README.md": "736f6f7fcad4a15cea66036d0e88f307ccdd3f59",
         "Gomah/branca-rs:src/internal/branca.ts": "506c5c80eea719b74949549ef44aa2d2530ed092",
         "Gomah/branca-rs:src/internal/errors.ts": "97798d6c664b395ab0452d404e7e267aa456c58a"
       }
     },
     "tokens": {
       "sources_sha": {
-        "Gomah/branca-rs:README.md": "e7b5c2c4aa8834f96bd44c1ab1d646f5e6f1a19e",
+        "Gomah/branca-rs:README.md": "736f6f7fcad4a15cea66036d0e88f307ccdd3f59",
         "Gomah/branca-rs:src/index.ts": "78f24988509bd42a23ad5121993c628c7fafdc2d",
         "Gomah/branca-rs:src/errors.ts": "afc8edf6eb25059982266f8c0a3140ba7e7763e8",
         "Gomah/branca-rs:src/utils.ts": "b40236e8052a1e60bcd54db7f19eaed130be315f",
