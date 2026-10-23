@@ -1,0 +1,16 @@
+[workspace]
+resolver = "3"
+members = ["crates/branca-core"]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+
+# The release profile is tuned for the WebAssembly artifact shipped in the npm package.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = "debuginfo"

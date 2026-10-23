@@ -1,0 +1,70 @@
+{
+  "name": "branca-rs",
+  "version": "0.1.0",
+  "description": "Branca tokens (IETF XChaCha20-Poly1305, base62) for JavaScript and TypeScript, powered by a Rust core compiled to WebAssembly",
+  "keywords": [
+    "aead",
+    "base62",
+    "branca",
+    "poly1305",
+    "rust",
+    "token",
+    "wasm",
+    "webassembly",
+    "xchacha20"
+  ],
+  "license": "MIT",
+  "author": "Thomas Marrec <thomas@distributed.sh>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./init": {
+      "types": "./dist/init.d.ts",
+      "default": "./dist/init.js"
+    },
+    "./branca.wasm": "./dist/branca_bg.wasm",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "bun run build:wasm && tsdown",
+    "build:wasm": "bun scripts/build-wasm.ts",
+    "test": "bun test",
+    "test:rust": "cargo test --workspace",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "lint:rust": "cargo clippy --workspace --all-targets -- -D warnings",
+    "fmt": "oxfmt && cargo fmt --all",
+    "fmt:check": "oxfmt --check && cargo fmt --all --check",
+    "check:package": "publint && attw --pack . --profile esm-only --exclude-entrypoints ./branca.wasm",
+    "smoke": "node scripts/smoke.mjs && node scripts/smoke.cjs && bun scripts/smoke.mjs && bun scripts/smoke.cjs",
+    "bench": "bun bench/branca.bench.ts",
+    "bench:node": "node bench/branca.bench.ts",
+    "bench:report": "bun bench/report.ts",
+    "smoke:deno": "deno run -A scripts/smoke.mjs",
+    "prepublishOnly": "bun run build && bun run check:package"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@types/bun": "^1.4.3",
+    "binaryen": "^132.0.0",
+    "branca": "^0.5.0",
+    "libsodium-wrappers": "^0.8.4",
+    "mitata": "^1.0.34",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "publint": "^0.3.25",
+    "tsdown": "^0.23.1",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}
