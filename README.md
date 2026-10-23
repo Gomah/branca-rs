@@ -240,6 +240,57 @@ Tokens are interchangeable, so you can migrate one service at a time.
 Two differences to watch: branca-js treats string keys as hex, branca-rs treats them as UTF-8, so pass
 bytes; and `payload` is a `Uint8Array`, so wrap it with `Buffer.from(payload)` if you need a `Buffer`.
 
+## Agent skills
+
+The package ships [Agent Skills](https://agentskills.io) in `skills/` that teach coding agents to use it
+correctly. They are versioned with the code, so the skills in `node_modules` describe the version you have
+installed.
+
+| Skill                              | Covers                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| `branca-rs#tokens`                 | Issuing and verifying tokens: keys, payloads, TTLs, error codes, key rotation |
+| `branca-rs#edge-runtimes`          | Cloudflare Workers, Vercel Edge and `branca-rs/init`                          |
+| `branca-rs#migrate-from-branca-js` | Porting code from branca-js                                                   |
+
+Load them with [TanStack Intent](https://tanstack.com/intent). Install it as a dev dependency, so the CLI
+that runs is the one your lockfile pins, and list the packages your agent may take instructions from in
+`package.json`:
+
+```sh
+npm install --save-dev @tanstack/intent
+```
+
+```json
+{
+  "intent": {
+    "skills": ["branca-rs"],
+    "exclude": ["branca-rs#migrate-from-branca-js"]
+  }
+}
+```
+
+```sh
+npx --no intent list                   # the skills your allowlist permits, with their descriptions
+npx --no intent load branca-rs#tokens  # print one skill
+npx --no intent install                # tell your agent, in AGENTS.md, how to find and load skills
+```
+
+`--no` stops npx from downloading a package when Intent is not installed; an unrelated package named
+`intent` exists on npm. With Bun, run `bun run intent list` and so on.
+
+- **Nothing runs.** Intent finds skills by reading `package.json` and `SKILL.md` files in `node_modules`. It
+  never imports or executes the packages it scans.
+- **You choose the sources.** Only packages listed in `intent.skills` reach your agent. Other dependencies
+  that ship skills, transitive ones included, stay hidden until you list them. `intent.exclude` drops skills
+  you don't need, such as the migration guide once you have migrated.
+- **One skill per task.** The instructions `intent install` writes tell the agent to list the skills, load
+  the one that matches the task, and load more only when the task spans several concerns.
+- **Hooks are a convenience.** `npx --no intent hooks install` adds Claude Code and Codex hooks that show the
+  skill catalog when a session starts and block the agent's file-edit tools until it has run `intent list`
+  or `intent load`. They don't check that a skill was loaded, fits the task or was followed, and shell
+  commands can still change files. Your allowlist and exclusions, and reading skill changes when you update
+  dependencies, decide which instructions your agent gets.
+
 ## Why WebAssembly and not native bindings
 
 Branca is server-side by nature, so it is fair to ask why this package ships WebAssembly instead of native
@@ -321,8 +372,8 @@ records the runtime versions. Bun and Node.js differ because their JavaScript an
   check of what each entry point exports, seven initialization scenarios in fresh processes, and round trips
   with branca-js.
 - CI runs rustfmt, clippy (native and `wasm32-unknown-unknown`), both test suites, smoke tests of the built
-  package under Node.js 22 and 24 (ESM and CommonJS) and Bun, plus `publint` and
-  "Are the types wrong?".
+  package under Node.js 22 and 24 (ESM and CommonJS) and Bun, `publint` and "Are the types wrong?", plus
+  the agent skills check described under [Development](#development).
 
 ## How it is built
 
@@ -347,7 +398,8 @@ easy to test against the official vectors, and free of platform dependencies.
 crates/branca-core/   Rust core and its tests
 src/                  TypeScript entry points: index.ts, errors.ts, utils.ts, init.ts
 src/internal/         TypeScript implementation and WebAssembly loader
-scripts/              build-wasm.ts and the smoke tests
+skills/               Agent Skills shipped in the package, one SKILL.md per task
+scripts/              build-wasm.ts, skills.ts and the smoke tests
 test/                 bun tests, fixtures and test/vectors/branca-spec.json
 bench/                benchmarks and RESULTS.md
 ```
@@ -375,11 +427,20 @@ bun run build
 | `bun run typecheck`     | `tsc --noEmit` with isolated declarations.                               |
 | `bun run smoke`         | Runs the built package under Node.js and Bun, as ESM and CommonJS.       |
 | `bun run check:package` | publint and "Are the types wrong?" against a packed tarball.             |
+| `bun run skills:check`  | Validate the agent skills and fail if a file they cite has changed.      |
+| `bun run skills:stamp`  | Record the files the skills cite as reviewed.                            |
 | `bun run bench`         | Benchmark against branca-js under Bun; `bench:node` for Node.js.         |
 | `bun run bench:report`  | Both runtimes; rewrites `bench/RESULTS.md` and the README tables.        |
 
 `src/generated/` and `dist/` are build output and git-ignored. Rebuild with `bun run build:wasm` after
 touching the Rust code; the TypeScript tests import the sources, so no tsdown build is needed for them.
+
+Each skill in `skills/` lists the files it was written from, mostly this README and `src/`, in its
+`sources` frontmatter. `skills:check` runs `intent validate`, which typechecks the skills' code examples
+against `src/`. It also fails when any of those files has changed since the skills were last reviewed. Read
+the affected skills against the change, update them if they no longer match, then run
+`bun run skills:stamp`, which records the files' git blob SHAs in `skills/sync-state.json`. The release
+workflow sets each skill's `library_version` to the version being released.
 
 ## Releasing
 

@@ -33,9 +33,11 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: bun install --frozen-lockfile
       # No NPM_TOKEN: `npm publish` (run by `changeset publish`, which builds and checks the package
-      # through prepublishOnly) authenticates with the workflow's OIDC token.
+      # through prepublishOnly) authenticates with the workflow's OIDC token. The version script also sets
+      # the agent skills' library_version to the new version in the release PR.
       - uses: changesets/action@v2
         with:
+          version-script: bun run version-packages
           publish-script: bun run release
           pr-title: "chore: release"
           commit-message: "chore: release"

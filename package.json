@@ -8,6 +8,7 @@
     "branca",
     "poly1305",
     "rust",
+    "tanstack-intent",
     "token",
     "wasm",
     "webassembly",
@@ -24,7 +25,9 @@
     "url": "git+https://github.com/Gomah/branca-rs.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "skills",
+    "!skills/sync-state.json"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -60,17 +63,21 @@
     "fmt": "oxfmt && cargo fmt --all",
     "fmt:check": "oxfmt --check && cargo fmt --all --check",
     "check:package": "publint && attw --pack . --profile esm-only --exclude-entrypoints ./branca.wasm",
+    "skills:check": "bun scripts/skills.ts check",
+    "skills:stamp": "bun scripts/skills.ts stamp",
     "smoke": "node scripts/smoke.mjs && node scripts/smoke.cjs && bun scripts/smoke.mjs && bun scripts/smoke.cjs",
     "bench": "bun bench/branca.bench.ts",
     "bench:node": "node bench/branca.bench.ts",
     "bench:report": "bun bench/report.ts",
     "changeset": "changeset",
+    "version-packages": "changeset version && bun scripts/skills.ts version",
     "release": "changeset publish",
-    "prepublishOnly": "bun run build && bun run check:package"
+    "prepublishOnly": "bun run build && bun run check:package && bun run skills:check"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@changesets/cli": "^3.0.3",
+    "@tanstack/intent": "^0.5.6",
     "@types/bun": "^1.4.4",
     "binaryen": "^132.0.0",
     "branca": "^0.5.0",
