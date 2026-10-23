@@ -1,5 +1,5 @@
-// Exercises the built package the way an ESM consumer would. Runs under Node.js, Bun and Deno
-// (see `bun run smoke` and `bun run smoke:deno`).
+// Exercises the built package the way an ESM consumer would. Runs under Node.js and Bun
+// (see `bun run smoke`).
 import { Branca, BrancaError, decode, encode, generateKey } from "../dist/index.js";
 import { isInitialized } from "../dist/init.js";
 
@@ -19,9 +19,5 @@ try {
 }
 
 const runtime =
-  globalThis.Deno !== undefined
-    ? `deno ${globalThis.Deno.version.deno}`
-    : globalThis.Bun !== undefined
-      ? `bun ${globalThis.Bun.version}`
-      : `node ${process.versions.node}`;
+  globalThis.Bun !== undefined ? `bun ${globalThis.Bun.version}` : `node ${process.versions.node}`;
 console.log(`ok esm (${runtime}): ${token.length}-char token`);

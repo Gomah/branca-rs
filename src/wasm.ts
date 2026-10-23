@@ -48,7 +48,7 @@ export async function init(input?: InitInput | Promise<InitInput>): Promise<void
 
 /**
  * Synchronous variant of {@link init}; this is what the main "branca-rs" entry point calls on
- * import. Works on Node.js, Bun, Deno and in workers. Browsers refuse to compile modules larger
+ * import. Works on Node.js, Bun and in workers. Browsers refuse to compile modules larger
  * than 4 KiB synchronously on the main thread, so use {@link init} there.
  */
 export function initSync(input?: InitInput): void {

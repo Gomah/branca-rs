@@ -43,9 +43,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
       - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run lint
@@ -53,5 +50,4 @@ jobs:
       - run: bun run typecheck
       - run: bun test
       - run: bun run smoke
-      - run: bun run smoke:deno
       - run: bun run check:package

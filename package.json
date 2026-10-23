@@ -48,7 +48,6 @@
     "bench": "bun bench/branca.bench.ts",
     "bench:node": "node bench/branca.bench.ts",
     "bench:report": "bun bench/report.ts",
-    "smoke:deno": "deno run -A scripts/smoke.mjs",
     "prepublishOnly": "bun run build && bun run check:package"
   },
   "devDependencies": {

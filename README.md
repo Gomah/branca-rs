@@ -18,7 +18,7 @@ is close to its `local` tokens.
   [RustCrypto](https://github.com/RustCrypto/AEADs)) are Rust, compiled to a 35 KB WebAssembly module that
   is embedded in the package. A thin TypeScript layer provides the API, draws nonces from
   `crypto.getRandomValues`, and maps errors.
-- **Made for servers and serverless.** Node.js 20.19+, Bun, Deno, AWS Lambda, Cloudflare Workers and Vercel
+- **Made for servers and serverless.** Node.js 20.19+, Bun, AWS Lambda, Cloudflare Workers and Vercel
   Edge. No native binaries, no postinstall step, no network access, and no top-level `await`, so both
   `import` and `require()` work.
 - **Spec compliant and interoperable.** Passes all 25 official test vectors and round-trips tokens with
@@ -97,7 +97,6 @@ const claims = msgpack.decode(payload);
 | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------- |
 | Node.js 20.19+                             | Supported, in CI (20/22/24)    | `import` and `require()` both work. Older 20.x needs `await import("branca-rs")`.              |
 | Bun                                        | Supported, in CI               | Tested with Bun 1.3.                                                                           |
-| Deno 2                                     | Supported, in CI               | Uses only web APIs. `import { Branca } from "npm:branca-rs"`.                                  |
 | AWS Lambda, Google Cloud Functions, Vercel | Supported                      | The module is embedded as base64, so bundlers produce a single self-contained file.            |
 | Cloudflare Workers, Vercel Edge            | Supported via `branca-rs/init` | These runtimes forbid compiling WebAssembly from bytes; see [Initialization](#initialization). |
 | Browsers                                   | Not a target                   | Branca needs the secret key. If you must, `await init()` from `branca-rs/init` works.          |
@@ -160,7 +159,7 @@ Extends `Error` with a `code` property. Match on `code`, never on `message`.
 
 ## Initialization
 
-Importing `branca-rs` instantiates the embedded WebAssembly module synchronously. On Node.js, Bun and Deno
+Importing `branca-rs` instantiates the embedded WebAssembly module synchronously. On Node.js and Bun
 that is all you need; it takes about a millisecond once per process.
 
 Some runtimes forbid compiling WebAssembly from bytes and want the module imported as a file instead.
@@ -176,7 +175,7 @@ await init(wasm);
 
 `init(input?)` accepts a `WebAssembly.Module`, raw bytes, or a promise of either, and falls back to the
 embedded module when called without arguments. `initSync(input?)` is the synchronous equivalent for
-Node.js, Bun, Deno and workers. Both are idempotent: the first call wins and later calls return at once.
+Node.js, Bun and workers. Both are idempotent: the first call wins and later calls return at once.
 
 From CommonJS, `require("branca-rs")` works on Node.js 20.19+ and 22.12+. Older versions need
 `await import("branca-rs")`.
@@ -233,7 +232,7 @@ bindings (the napi-rs approach used by rolldown and oxc). The choice is delibera
 
 - **One artifact for every platform.** No prebuilt binary per OS, architecture and libc, no cross-compilation
   matrix in CI, and no failed installs on Alpine or ARM.
-- **Serverless and edge are servers too.** Cloudflare Workers, Vercel Edge and Deno Deploy cannot load
+- **Serverless and edge are servers too.** Cloudflare Workers and Vercel Edge cannot load
   native addons. WebAssembly runs on all of them.
 - **Supply-chain hygiene.** Nothing is downloaded at install time, there is no postinstall script, and the
   code runs inside the WebAssembly sandbox.
@@ -306,7 +305,7 @@ records the runtime versions. Bun and Node.js differ because their JavaScript an
 - `bun test` runs the same 25 vectors through the WebAssembly build, the API, TTL and validation tests, seven
   initialization scenarios in fresh processes, and round trips with branca-js.
 - CI runs rustfmt, clippy (native and `wasm32-unknown-unknown`), both test suites, smoke tests of the built
-  package under Node.js 20, 22 and 24 (ESM and CommonJS), Bun and Deno, plus `publint` and
+  package under Node.js 20, 22 and 24 (ESM and CommonJS) and Bun, plus `publint` and
   "Are the types wrong?".
 
 ## How it is built
@@ -347,20 +346,19 @@ bun install
 bun run build
 ```
 
-| Command                 | What it does                                                                     |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| `bun run build`         | Build the Rust core to WebAssembly, then bundle the package with tsdown.         |
-| `bun run build:wasm`    | Only the first half: cargo, wasm-bindgen, wasm-opt, base64 module.               |
-| `bun test`              | TypeScript tests against the sources.                                            |
-| `bun run test:rust`     | Rust tests.                                                                      |
-| `bun run lint`          | oxlint. `bun run lint:rust` runs clippy.                                         |
-| `bun run fmt`           | oxfmt and rustfmt. `bun run fmt:check` verifies without writing.                 |
-| `bun run typecheck`     | `tsc --noEmit` with isolated declarations.                                       |
-| `bun run smoke`         | Runs the built package under Node.js and Bun, as ESM and CommonJS.               |
-| `bun run smoke:deno`    | Same under Deno (`bunx deno run -A scripts/smoke.mjs` if Deno is not installed). |
-| `bun run check:package` | publint and "Are the types wrong?" against a packed tarball.                     |
-| `bun run bench`         | Benchmark against branca-js under Bun; `bench:node` for Node.js.                 |
-| `bun run bench:report`  | Both runtimes; rewrites `bench/RESULTS.md` and the README tables.                |
+| Command                 | What it does                                                             |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `bun run build`         | Build the Rust core to WebAssembly, then bundle the package with tsdown. |
+| `bun run build:wasm`    | Only the first half: cargo, wasm-bindgen, wasm-opt, base64 module.       |
+| `bun test`              | TypeScript tests against the sources.                                    |
+| `bun run test:rust`     | Rust tests.                                                              |
+| `bun run lint`          | oxlint. `bun run lint:rust` runs clippy.                                 |
+| `bun run fmt`           | oxfmt and rustfmt. `bun run fmt:check` verifies without writing.         |
+| `bun run typecheck`     | `tsc --noEmit` with isolated declarations.                               |
+| `bun run smoke`         | Runs the built package under Node.js and Bun, as ESM and CommonJS.       |
+| `bun run check:package` | publint and "Are the types wrong?" against a packed tarball.             |
+| `bun run bench`         | Benchmark against branca-js under Bun; `bench:node` for Node.js.         |
+| `bun run bench:report`  | Both runtimes; rewrites `bench/RESULTS.md` and the README tables.        |
 
 `src/generated/` and `dist/` are build output and git-ignored. Rebuild with `bun run build:wasm` after
 touching the Rust code; the TypeScript tests import the sources, so no tsdown build is needed for them.
