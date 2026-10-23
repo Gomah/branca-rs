@@ -1,5 +1,5 @@
 /**
- * Builds the Rust core to WebAssembly and generates the bindings consumed by src/wasm.ts:
+ * Builds the Rust core to WebAssembly and generates the bindings consumed by src/internal/wasm.ts:
  *
  *   cargo build (wasm32-unknown-unknown) → wasm-bindgen (web target) → wasm-opt → base64 module
  *

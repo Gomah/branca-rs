@@ -1,14 +1,6 @@
 import { BrancaError, type BrancaErrorCode, isKnownCode } from "./errors.ts";
+import { KEY_LENGTH, MAX_TIMESTAMP, NONCE_LENGTH, randomBytes } from "./utils.ts";
 import { raw } from "./wasm.ts";
-
-/** The version byte every Branca token starts with. */
-export const TOKEN_VERSION = 0xba;
-/** Key length in bytes (XChaCha20-Poly1305). */
-export const KEY_LENGTH = 32;
-/** Nonce length in bytes (XChaCha20). */
-export const NONCE_LENGTH = 24;
-/** Largest representable timestamp, 2106-02-07T06:28:15Z. */
-export const MAX_TIMESTAMP = 0xffff_ffff;
 
 /** 32 bytes, or a string whose UTF-8 encoding is exactly 32 bytes. */
 export type BrancaKey = Uint8Array | string;
@@ -97,11 +89,6 @@ export function decode(key: BrancaKey, token: string, options: DecodeOptions = {
   return { timestamp: view.getUint32(0), payload: out.subarray(4) };
 }
 
-/** Generates a fresh random 32-byte key. */
-export function generateKey(): Uint8Array {
-  return randomBytes(KEY_LENGTH);
-}
-
 /** Binds a key once so you can encode and decode without passing it around. */
 export class Branca {
   readonly #key: Uint8Array;
@@ -141,12 +128,6 @@ function assertUint32(value: unknown, code: BrancaErrorCode): asserts value is n
 
 function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
-}
-
-function randomBytes(length: number): Uint8Array {
-  const webCrypto = globalThis.crypto;
-  if (typeof webCrypto?.getRandomValues !== "function") throw new BrancaError("CRYPTO_UNAVAILABLE");
-  return webCrypto.getRandomValues(new Uint8Array(length));
 }
 
 /** Maps the code-only errors thrown by the WebAssembly core to `BrancaError`s. */

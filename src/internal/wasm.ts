@@ -3,8 +3,8 @@ import __wbg_init, {
   decode as wasmDecode,
   encode as wasmEncode,
   initSync as __wbg_initSync,
-} from "./generated/branca.js";
-import { wasmBase64 } from "./generated/wasm-bytes.ts";
+} from "../generated/branca.js";
+import { wasmBase64 } from "../generated/wasm-bytes.ts";
 
 /** A compiled `WebAssembly.Module`, or the raw bytes of `branca.wasm`. */
 export type InitInput = WebAssembly.Module | ArrayBufferView | ArrayBuffer;

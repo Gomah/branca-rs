@@ -1,9 +1,11 @@
 // Runs in a fresh process (see test/init.test.ts) so every scenario starts uninitialized.
 import { resolve } from "node:path";
-import { Branca, BrancaError, init, initSync, isInitialized } from "../../src/init.ts";
+import { BrancaError } from "../../src/errors.ts";
+import { Branca, init, initSync, isInitialized } from "../../src/init.ts";
+import { generateKey } from "../../src/utils.ts";
 
 const mode = process.argv[2];
-const key = "supersecretkeyyoushouldnotcommit";
+const key = generateKey(); // "branca-rs/utils" works before initialization
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`[${mode}] ${message}`);

@@ -1,7 +1,9 @@
 // Exercises the built package the way an ESM consumer would. Runs under Node.js and Bun
 // (see `bun run smoke`).
-import { Branca, BrancaError, decode, encode, generateKey } from "../dist/index.js";
+import { BrancaError } from "../dist/errors.js";
+import { Branca, decode, encode } from "../dist/index.js";
 import { isInitialized } from "../dist/init.js";
+import { generateKey } from "../dist/utils.js";
 
 const key = generateKey();
 const token = encode(key, "smoke test");

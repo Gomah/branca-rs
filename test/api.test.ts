@@ -1,19 +1,38 @@
 import { describe, expect, test } from "bun:test";
-import {
-  Branca,
-  BrancaError,
-  KEY_LENGTH,
-  MAX_TIMESTAMP,
-  NONCE_LENGTH,
-  TOKEN_VERSION,
-  decode,
-  encode,
-  generateKey,
-  isInitialized,
-} from "../src/index.ts";
+import { Branca, decode, encode } from "../src/index.ts";
+import { BrancaError } from "../src/errors.ts";
+import { isInitialized } from "../src/init.ts";
+import { KEY_LENGTH, MAX_TIMESTAMP, NONCE_LENGTH, TOKEN_VERSION, generateKey } from "../src/utils.ts";
 import { KEY, expectBrancaError, utf8 } from "./helpers.ts";
 
 const now = (): number => Math.floor(Date.now() / 1000);
+const exportsOf = async (path: string): Promise<string[]> => Object.keys(await import(path)).toSorted();
+
+describe("entry points", () => {
+  test("each exports only its own part of the API", async () => {
+    expect(await exportsOf("../src/index.ts")).toEqual(["Branca", "decode", "encode"]);
+    expect(await exportsOf("../src/errors.ts")).toEqual(["BrancaError"]);
+    expect(await exportsOf("../src/utils.ts")).toEqual([
+      "KEY_LENGTH",
+      "MAX_TIMESTAMP",
+      "NONCE_LENGTH",
+      "TOKEN_VERSION",
+      "generateKey",
+    ]);
+    expect(await exportsOf("../src/init.ts")).toEqual([
+      "Branca",
+      "decode",
+      "encode",
+      "init",
+      "initSync",
+      "isInitialized",
+    ]);
+  });
+
+  test("the main entry point initializes on import", () => {
+    expect(isInitialized()).toBe(true);
+  });
+});
 
 describe("constants", () => {
   test("match the specification", () => {
@@ -21,10 +40,6 @@ describe("constants", () => {
     expect(KEY_LENGTH).toBe(32);
     expect(NONCE_LENGTH).toBe(24);
     expect(MAX_TIMESTAMP).toBe(4294967295);
-  });
-
-  test("the main entry point initializes on import", () => {
-    expect(isInitialized()).toBe(true);
   });
 });
 

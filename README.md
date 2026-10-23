@@ -41,10 +41,10 @@ The package is ESM only and ships its own TypeScript declarations.
 ## Quick start
 
 ```ts
-import { Branca, generateKey } from "branca-rs";
+import { Branca } from "branca-rs";
 
-// The key is 32 secret bytes. Generate one with generateKey(), store it as hex in your secret
-// manager, and load it at startup.
+// The key is 32 secret bytes. Generate one with generateKey() from "branca-rs/utils", store it as
+// hex in your secret manager, and load it at startup.
 const key = Buffer.from(process.env.BRANCA_KEY ?? "", "hex");
 const branca = new Branca(key); // throws INVALID_KEY unless the key is exactly 32 bytes
 
@@ -60,7 +60,7 @@ const claims = JSON.parse(new TextDecoder().decode(payload));
 Every failure is a `BrancaError` with a stable `code`:
 
 ```ts
-import { BrancaError } from "branca-rs";
+import { BrancaError } from "branca-rs/errors";
 
 try {
   branca.decode(token, { ttl: 3600 });
@@ -103,6 +103,16 @@ const claims = msgpack.decode(payload);
 
 ## API
 
+The core API comes from `branca-rs`. Errors and helpers have their own entry points:
+
+| Import from             | Exports                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------- |
+| `branca-rs`             | `encode`, `decode`, `Branca` and their types. Initializes the WebAssembly core on import.          |
+| `branca-rs/errors`      | `BrancaError` and the `BrancaErrorCode` type.                                                      |
+| `branca-rs/utils`       | `generateKey` and the constants.                                                                   |
+| `branca-rs/init`        | The `branca-rs` API without initialization on import, plus `init`, `initSync` and `isInitialized`. |
+| `branca-rs/branca.wasm` | The raw WebAssembly module, for runtimes that import `.wasm` files.                                |
+
 ### `encode(key, payload, options?) → string`
 
 | Parameter           | Type                   | Notes                                                                   |
@@ -123,10 +133,6 @@ The returned `timestamp` comes from the authenticated header, so it can be trust
 after the token has been verified, as the specification requires. `payload` is a fresh copy; the token's
 bytes never alias WebAssembly memory.
 
-### `generateKey() → Uint8Array`
-
-32 cryptographically random bytes from `crypto.getRandomValues`.
-
 ### `class Branca`
 
 `new Branca(key)` validates and copies the key once. `.encode(payload, options?)` and
@@ -134,7 +140,7 @@ bytes never alias WebAssembly memory.
 
 ### `BrancaError`
 
-Extends `Error` with a `code` property. Match on `code`, never on `message`.
+From `branca-rs/errors`. Extends `Error` with a `code` property. Match on `code`, never on `message`.
 
 | Code                 | Meaning                                                                     |
 | -------------------- | --------------------------------------------------------------------------- |
@@ -152,10 +158,14 @@ Extends `Error` with a `code` property. Match on `code`, never on `message`.
 | `NOT_INITIALIZED`    | `branca-rs/init` was imported but `init()` or `initSync()` was not called.  |
 | `CRYPTO_UNAVAILABLE` | `globalThis.crypto.getRandomValues` is missing.                             |
 
+### `generateKey() → Uint8Array`
+
+From `branca-rs/utils`. 32 cryptographically random bytes from `crypto.getRandomValues`.
+
 ### Constants
 
-`TOKEN_VERSION` (`0xBA`), `KEY_LENGTH` (32), `NONCE_LENGTH` (24) and `MAX_TIMESTAMP` (2³²−1, which is
-2106-02-07T06:28:15Z).
+From `branca-rs/utils`: `TOKEN_VERSION` (`0xBA`), `KEY_LENGTH` (32), `NONCE_LENGTH` (24) and
+`MAX_TIMESTAMP` (2³²−1, which is 2106-02-07T06:28:15Z).
 
 ## Initialization
 
@@ -177,6 +187,9 @@ await init(wasm);
 embedded module when called without arguments. `initSync(input?)` is the synchronous equivalent for
 Node.js, Bun and workers. Both are idempotent: the first call wins and later calls return at once.
 
+`branca-rs/errors` and `branca-rs/utils` never touch the WebAssembly module, so import them next to
+`branca-rs/init` as usual. They work before `init()` too.
+
 From CommonJS, `require("branca-rs")` works on every supported Node.js version (22.12+).
 
 ## Security guidance
@@ -186,6 +199,9 @@ From CommonJS, `require("branca-rs")` works on every supported Node.js version (
 - **Rotation.** Branca tokens carry no key id. Keep the previous key around and try keys newest first:
 
   ```ts
+  import { decode } from "branca-rs";
+  import { BrancaError } from "branca-rs/errors";
+
   function decodeWithRotation(token: string, keys: Uint8Array[]) {
     for (const key of keys) {
       try {
@@ -301,8 +317,9 @@ records the runtime versions. Bun and Node.js differ because their JavaScript an
 - `cargo test` runs the Rust unit tests, the 25 official
   [specification vectors](https://github.com/tuupola/branca-spec/blob/master/test_vectors.json), and
   round trips with the reference [`branca`](https://crates.io/crates/branca) crate.
-- `bun test` runs the same 25 vectors through the WebAssembly build, the API, TTL and validation tests, seven
-  initialization scenarios in fresh processes, and round trips with branca-js.
+- `bun test` runs the same 25 vectors through the WebAssembly build, the API, TTL and validation tests, a
+  check of what each entry point exports, seven initialization scenarios in fresh processes, and round trips
+  with branca-js.
 - CI runs rustfmt, clippy (native and `wasm32-unknown-unknown`), both test suites, smoke tests of the built
   package under Node.js 22 and 24 (ESM and CommonJS) and Bun, plus `publint` and
   "Are the types wrong?".
@@ -318,7 +335,8 @@ src/generated/          wasm-bindgen glue + branca_bg.wasm (wasm-opt -Oz) + base
 src/                    TypeScript API: validation, nonce/timestamp generation, BrancaError, init
         │  tsdown (Rolldown)
         ▼
-dist/                   index.js (initializes on import), init.js (explicit init), .d.ts, branca_bg.wasm
+dist/                   index.js (initializes on import), errors.js, utils.js, init.js (explicit init),
+                        shared chunks, .d.ts, branca_bg.wasm
 ```
 
 The Rust crate is intentionally pure: `encode(key, nonce, timestamp, payload)` and
@@ -327,7 +345,8 @@ easy to test against the official vectors, and free of platform dependencies.
 
 ```
 crates/branca-core/   Rust core and its tests
-src/                  TypeScript API, entry points and WebAssembly loader
+src/                  TypeScript entry points: index.ts, errors.ts, utils.ts, init.ts
+src/internal/         TypeScript implementation and WebAssembly loader
 scripts/              build-wasm.ts and the smoke tests
 test/                 bun tests, fixtures and test/vectors/branca-spec.json
 bench/                benchmarks and RESULTS.md

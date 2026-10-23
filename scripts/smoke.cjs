@@ -1,6 +1,8 @@
 // Exercises the built package from CommonJS. `require()` of the ESM build works on Node.js 22.12+
 // because the package has no top-level await. Also runs under Bun.
-const { Branca, BrancaError, decode, encode, generateKey } = require("../dist/index.js");
+const { BrancaError } = require("../dist/errors.js");
+const { Branca, decode, encode } = require("../dist/index.js");
+const { generateKey } = require("../dist/utils.js");
 
 const key = generateKey();
 const token = encode(key, "smoke test");

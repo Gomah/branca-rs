@@ -1,6 +1,6 @@
-//! wasm-bindgen surface consumed by `src/wasm.ts`. Errors cross the boundary as JS `Error`s whose
-//! message is the stable machine-readable code from [`crate::Error::code`]; the TypeScript wrapper
-//! turns them into `BrancaError`s.
+//! wasm-bindgen surface consumed by `src/internal/wasm.ts`. Errors cross the boundary as JS
+//! `Error`s whose message is the stable machine-readable code from [`crate::Error::code`]; the
+//! TypeScript wrapper turns them into `BrancaError`s.
 
 use wasm_bindgen::prelude::*;
 

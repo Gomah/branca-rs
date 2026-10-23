@@ -6,11 +6,20 @@
  * top-level await and `require("branca-rs")` works on Node.js 22.12+. Runtimes that
  * forbid compiling WebAssembly from bytes (Cloudflare Workers, Vercel Edge) should import
  * "branca-rs/init" instead and pass their imported module to `init()`.
+ *
+ * `BrancaError` lives in "branca-rs/errors", `generateKey` and the constants in "branca-rs/utils".
  */
-import { initSync } from "./wasm.ts";
+import { initSync } from "./internal/wasm.ts";
 
 initSync();
 
-export * from "./branca.ts";
-export { BrancaError, type BrancaErrorCode } from "./errors.ts";
-export { isInitialized } from "./wasm.ts";
+export {
+  Branca,
+  decode,
+  encode,
+  type BrancaKey,
+  type BrancaPayload,
+  type DecodeOptions,
+  type DecodedToken,
+  type EncodeOptions,
+} from "./internal/branca.ts";
