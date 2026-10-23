@@ -13,8 +13,16 @@
     "webassembly",
     "xchacha20"
   ],
+  "homepage": "https://github.com/Gomah/branca-rs#readme",
+  "bugs": {
+    "url": "https://github.com/Gomah/branca-rs/issues"
+  },
   "license": "MIT",
   "author": "Thomas Marrec <thomas@distributed.sh>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gomah/branca-rs.git"
+  },
   "files": [
     "dist"
   ],
