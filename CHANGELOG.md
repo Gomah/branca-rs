@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file. The project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## 0.3.0
+
+### Minor Changes
+
+- a7becb0: Breaking: split the API across entry points. `branca-rs` now exports only `encode`, `decode`, `Branca` and their types, and `branca-rs/init` exports the same plus `init`, `initSync` and `isInitialized`. Import the rest from the new entry points:
+
+  - `BrancaError` and `BrancaErrorCode` from `branca-rs/errors`.
+  - `generateKey`, `TOKEN_VERSION`, `KEY_LENGTH`, `NONCE_LENGTH` and `MAX_TIMESTAMP` from `branca-rs/utils`.
+
+  `isInitialized` is no longer exported from `branca-rs`, where it always returned `true`; import it from `branca-rs/init`.
+
 ## 0.2.0
 
 ### Minor Changes
