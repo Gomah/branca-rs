@@ -4,14 +4,15 @@ version = "0.1.0"
 description = "Branca token core (IETF XChaCha20-Poly1305 + base62), compiled to WebAssembly for the branca-rs npm package"
 edition.workspace = true
 license.workspace = true
-rust-version.workspace = true
 publish = false
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-chacha20poly1305 = { version = "0.11", default-features = false, features = ["alloc"] }
+chacha20poly1305 = { version = "0.11", default-features = false, features = [
+    "alloc",
+] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2"
