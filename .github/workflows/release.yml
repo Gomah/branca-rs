@@ -4,30 +4,49 @@ on:
   push:
     branches: [main]
 
+# One release run at a time, and never cancel one: two publishing at once can both fail, and a run
+# killed mid-publish leaves half a release behind.
 concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+# Grant nothing by default; each job declares exactly the token scopes it needs.
+permissions: {}
 
 jobs:
   release:
     name: Version or publish
+    # Don't run on forks. A fork cannot publish (trusted publishing is bound to this repository), but
+    # with Actions enabled every sync of main would build, then fail or open a release PR in the fork.
+    if: github.repository == 'Gomah/branca-rs'
     runs-on: ubuntu-latest
     permissions:
       contents: write # push the version branch, tags and GitHub releases
       pull-requests: write # open the "Version Packages" PR
       id-token: write # npm trusted publishing (OIDC) and provenance
     steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
+      # Every action is pinned to a commit SHA so a moved tag cannot change what runs in the job that
+      # holds the publish token.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Keep the token out of .git/config while bun install and npm publish run. changesets/action
+          # pushes the version branch and tags through the GitHub API, so it does not need it there.
+          persist-credentials: false
+      # dtolnay/rust-toolchain has no releases; this is a commit on master, which requires `toolchain`.
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master 2026-10-16
+        with:
+          toolchain: stable
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
-      - uses: taiki-e/install-action@cargo-binstall
+      # No Rust build cache here: the release build compiles from scratch rather than restoring a
+      # target/ directory into the artifact that gets published.
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+        with:
+          tool: cargo-binstall
       - name: Install the wasm-bindgen CLI pinned by Cargo.lock
         run: |
           VERSION=$(grep -A1 '^name = "wasm-bindgen"$' Cargo.lock | grep version | cut -d'"' -f2)
           cargo binstall --no-confirm --force "wasm-bindgen-cli@${VERSION}"
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
       # Trusted publishing needs npm 11.5.1 or newer, which Node 24 ships.
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
@@ -35,7 +54,7 @@ jobs:
       # No NPM_TOKEN: `npm publish` (run by `changeset publish`, which builds and checks the package
       # through prepublishOnly) authenticates with the workflow's OIDC token. The version script also sets
       # the agent skills' library_version to the new version in the release PR.
-      - uses: changesets/action@v2
+      - uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           version-script: bun run version-packages
           publish-script: bun run release
