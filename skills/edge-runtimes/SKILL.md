@@ -12,7 +12,7 @@ metadata:
     cannot compile it from bytes.
   type: core
   library: branca-rs
-  library_version: "0.3.1"
+  library_version: "0.3.2"
 sources:
   - Gomah/branca-rs:README.md
   - Gomah/branca-rs:src/index.ts
