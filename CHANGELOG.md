@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file. The project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## 0.3.3
+
+### Patch Changes
+
+- 4751b93: Rebuilt the WebAssembly module with updated Rust dependencies: `wasm-bindgen` 0.2.130 and `ctutils` 0.4.7. The token format and the JavaScript API are unchanged.
+
 ## 0.3.2
 
 ### Patch Changes
